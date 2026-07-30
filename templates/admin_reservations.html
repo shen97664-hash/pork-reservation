@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}预约管理 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-list-check text-danger"></i> 预约管理</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">返回仪表盘</a>
+</div>
+
+<div class="mb-3">
+    <a href="{{ url_for('admin_reservations') }}" class="btn btn-sm {{ 'btn-dark' if not current_status else 'btn-outline-dark' }}">全部</a>
+    <a href="{{ url_for('admin_reservations', status='pending') }}" class="btn btn-sm {{ 'btn-warning' if current_status=='pending' else 'btn-outline-warning' }}">待确认</a>
+    <a href="{{ url_for('admin_reservations', status='confirmed') }}" class="btn btn-sm {{ 'btn-success' if current_status=='confirmed' else 'btn-outline-success' }}">已确认</a>
+    <a href="{{ url_for('admin_reservations', status='cancelled') }}" class="btn btn-sm {{ 'btn-secondary' if current_status=='cancelled' else 'btn-outline-secondary' }}">已取消</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th><th>姓名</th><th>电话</th><th>部位</th><th>数量</th><th>取货日</th><th>状态</th><th>下单时间</th><th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservations %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.user_name }}</td>
+                <td>{{ r.phone }}</td>
+                <td>{{ r.part_name }}</td>
+                <td>{{ r.quantity }}斤</td>
+                <td>{{ r.appoint_date }}</td>
+                <td>
+                    {% if r.status == 'pending' %}<span class="badge bg-warning text-dark">待确认</span>
+                    {% elif r.status == 'confirmed' %}<span class="badge bg-success">已确认</span>
+                    {% else %}<span class="badge bg-secondary">已取消</span>{% endif %}
+                </td>
+                <td><small>{{ r.created_at }}</small></td>
+                <td>
+                    {% if r.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('update_reservation_status', res_id=r.id) }}" class="d-inline">
+                        <input type="hidden" name="status" value="confirmed">
+                        <button class="btn btn-success btn-sm" title="确认"><i class="bi bi-check-lg"></i></button>
+                    </form>
+                    <form method="POST" action="{{ url_for('update_reservation_status', res_id=r.id) }}" class="d-inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button class="btn btn-danger btn-sm" title="取消"><i class="bi bi-x-lg"></i></button>
+                    </form>
+                    {% elif r.status == 'confirmed' %}
+                    <form method="POST" action="{{ url_for('update_reservation_status', res_id=r.id) }}" class="d-inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button class="btn btn-outline-danger btn-sm" title="取消"><i class="bi bi-x-lg"></i></button>
+                    </form>
+                    {% else %}
+                    <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not reservations %}
+            <tr><td colspan="9" class="text-center text-muted py-4">暂无预约记录</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

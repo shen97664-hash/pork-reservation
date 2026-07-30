@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}预约购买 {{ part.name }} - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="mb-0"><i class="bi bi-calendar-check"></i> 预约购买 - {{ part.name }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h5 class="text-danger fw-bold">¥{{ "%.1f"|format(part.price) }}<small class="text-muted">/斤</small></h5>
+                    <p class="text-muted mb-1">{{ part.description }}</p>
+                    {% if part.stock > 20 %}
+                    <span class="badge bg-success">库存充足: {{ part.stock }}斤</span>
+                    {% elif part.stock > 0 %}
+                    <span class="badge bg-warning text-dark">库存紧张: {{ part.stock }}斤</span>
+                    {% else %}
+                    <span class="badge bg-danger">已售罄</span>
+                    {% endif %}
+                </div>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-person"></i> 您的姓名</label>
+                        <input type="text" name="user_name" class="form-control" placeholder="请输入您的姓名" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-phone"></i> 手机号码</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="请输入11位手机号" maxlength="11" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-box"></i> 预约数量（斤）</label>
+                        <input type="number" name="quantity" class="form-control" min="1" max="{{ part.stock }}" placeholder="请输入购买斤数" required>
+                        <div class="form-text">最多可预约 {{ part.stock }} 斤</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-calendar-date"></i> 取货日期</label>
+                        <input type="date" name="appoint_date" class="form-control" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg"><i class="bi bi-check-circle"></i> 确认预约</button>
+                        <a href="{{ url_for('products') }}" class="btn btn-outline-secondary">返回产品列表</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

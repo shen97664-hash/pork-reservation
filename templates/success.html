@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}预约成功 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <div class="card shadow">
+            <div class="card-body py-5">
+                <i class="bi bi-check-circle-fill text-success" style="font-size:4rem"></i>
+                <h3 class="mt-3 fw-bold">预约成功！</h3>
+                <p class="text-muted mt-3">
+                    <strong>{{ name }}</strong>，您已成功预约<br>
+                    数量：<strong class="text-danger">{{ qty }} 斤</strong><br>
+                    取货日期：<strong>{{ date }}</strong>
+                </p>
+                <hr>
+                <p class="small text-muted">请在取货当天凭手机号到店提货，谢谢惠顾！</p>
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('products') }}" class="btn btn-danger">继续选购</a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">返回首页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

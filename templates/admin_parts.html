@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}产品管理 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-pencil-square text-danger"></i> 产品管理</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">返回仪表盘</a>
+</div>
+
+<!-- 添加新部位 -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light fw-bold"><i class="bi bi-plus-circle"></i> 添加新部位</div>
+    <div class="card-body">
+        <form method="POST" class="row g-2 align-items-end">
+            <input type="hidden" name="action" value="add">
+            <div class="col-md-3">
+                <input type="text" name="name" class="form-control" placeholder="部位名称" required>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="description" class="form-control" placeholder="描述与适合做法">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="price" class="form-control" placeholder="价格(元/斤)" step="0.1" min="0" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="stock" class="form-control" placeholder="库存(斤)" min="0" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-danger w-100"><i class="bi bi-plus"></i> 添加</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 现有部位列表 -->
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th><th>名称</th><th>描述</th><th>价格(元/斤)</th><th>库存(斤)</th><th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for part in parts %}
+            <tr>
+                <td>{{ part.id }}</td>
+                <td class="fw-bold">{{ part.name }}</td>
+                <td><small class="text-muted">{{ part.description }}</small></td>
+                <td>
+                    <form method="POST" class="d-inline">
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="part_id" value="{{ part.id }}">
+                        <input type="number" name="price" value="{{ part.price }}" class="form-control form-control-sm" step="0.1" min="0" style="width:90px" required>
+                </td>
+                <td>
+                        <input type="number" name="stock" value="{{ part.stock }}" class="form-control form-control-sm" min="0" style="width:80px" required>
+                </td>
+                <td>
+                        <input type="hidden" name="description" value="{{ part.description }}">
+                        <button type="submit" class="btn btn-success btn-sm" title="保存修改"><i class="bi bi-check-lg"></i></button>
+                    </form>
+                    <form method="POST" class="d-inline" onsubmit="return confirm('确定要删除「{{ part.name }}」吗？')">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="part_id" value="{{ part.id }}">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

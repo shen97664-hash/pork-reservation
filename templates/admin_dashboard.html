@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}管理后台 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2 text-danger"></i> 管理后台</h2>
+    <div>
+        <a href="{{ url_for('admin_parts') }}" class="btn btn-outline-danger btn-sm"><i class="bi bi-pencil-square"></i> 管理产品</a>
+        <a href="{{ url_for('admin_reservations') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-check"></i> 管理预约</a>
+        <a href="{{ url_for('admin_change_password') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-key"></i> 修改密码</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-cart-check text-primary fs-1"></i>
+                <h2 class="mt-2">{{ total }}</h2>
+                <p class="text-muted mb-0">总预约数</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-calendar-check text-success fs-1"></i>
+                <h2 class="mt-2">{{ today }}</h2>
+                <p class="text-muted mb-0">今日预约</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-exclamation-triangle text-warning fs-1"></i>
+                <h2 class="mt-2">{{ low_stock|length }}</h2>
+                <p class="text-muted mb-0">库存预警 (&lt;10斤)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if low_stock %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> <strong>库存预警：</strong>
+    {% for item in low_stock %}
+        {{ item.name }}(余{{ item.stock }}斤){% if not loop.last %}、{% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<h5 class="mt-4 mb-3"><i class="bi bi-clock-history"></i> 最近预约</h5>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th><th>姓名</th><th>电话</th><th>部位</th><th>数量</th><th>取货日</th><th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in recent %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.user_name }}</td>
+                <td>{{ r.phone }}</td>
+                <td>{{ r.part_name }}</td>
+                <td>{{ r.quantity }}斤</td>
+                <td>{{ r.appoint_date }}</td>
+                <td>
+                    {% if r.status == 'pending' %}<span class="badge bg-warning text-dark">待确认</span>
+                    {% elif r.status == 'confirmed' %}<span class="badge bg-success">已确认</span>
+                    {% else %}<span class="badge bg-secondary">已取消</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not recent %}
+            <tr><td colspan="7" class="text-center text-muted">暂无预约记录</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

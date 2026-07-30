@@ -1,0 +1,57 @@
+﻿{% extends "base.html" %}
+{% block title %}首页 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="hero-section text-center text-white py-5 mb-5 rounded-3">
+    <h1 class="display-4 fw-bold mb-3">为邻超市（长江街店）鲜猪肉直供</h1>
+    <p class="lead mb-4">新鲜 · 实惠 · 当日直达</p>
+    <a href="{{ url_for('products') }}" class="btn btn-light btn-lg px-5">
+        <i class="bi bi-cart3"></i> 立即预约选购
+    </a>
+</div>
+
+<h2 class="text-center mb-4"><i class="bi bi-fire text-danger"></i> 热门推荐</h2>
+<div class="row g-4 mb-5">
+    {% for part in featured %}
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm product-card">
+            <div class="card-body text-center">
+                <div class="pork-icon mb-3"><i class="bi bi-emoji-smile fs-1 text-danger"></i></div>
+                <h5 class="card-title fw-bold">{{ part.name }}</h5>
+                <p class="text-muted small">{{ part.description[:30] }}...</p>
+                <p class="text-danger fs-4 fw-bold mb-2">¥{{ "%.1f"|format(part.price) }}<small class="fs-6">/斤</small></p>
+                <span class="badge bg-{{ 'success' if part.stock > 20 else ('warning' if part.stock > 0 else 'danger') }}">
+                    余量: {{ part.stock }}斤
+                </span>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center pb-3">
+                <a href="{{ url_for('reserve', part_id=part.id) }}" class="btn btn-danger btn-sm px-4">立即预约</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row text-center g-4">
+    <div class="col-md-4">
+        <div class="p-4">
+            <i class="bi bi-shield-check text-danger fs-1"></i>
+            <h5 class="mt-2">品质保证</h5>
+            <p class="text-muted">当日新鲜屠宰，严格质检</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-4">
+            <i class="bi bi-truck text-danger fs-1"></i>
+            <h5 class="mt-2">方便自取</h5>
+            <p class="text-muted">预约取货，无需排队等候</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-4">
+            <i class="bi bi-tag text-danger fs-1"></i>
+            <h5 class="mt-2">价格实惠</h5>
+            <p class="text-muted">产地直供，省去中间环节</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

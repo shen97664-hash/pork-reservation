@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}管理员登录 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white text-center">
+                <h4 class="mb-0"><i class="bi bi-shield-lock"></i> 管理员登录</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">用户名</label>
+                        <input type="text" name="username" class="form-control" placeholder="请输入用户名" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">密码</label>
+                        <input type="password" name="password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">登录</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

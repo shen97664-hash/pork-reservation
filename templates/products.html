@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}全部产品 - 鲜猪肉直供{% endblock %}
+{% block content %}
+<h2 class="text-center mb-2"><i class="bi bi-grid text-danger"></i> 全部猪肉部位</h2>
+<p class="text-center text-muted mb-4">精选各部位鲜猪肉，价格透明，品质保证</p>
+<div class="row g-4">
+    {% for part in parts %}
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm product-card">
+            <div class="card-body text-center">
+                <div class="pork-icon mb-2"><i class="bi bi-emoji-smile fs-1 text-danger"></i></div>
+                <h5 class="card-title fw-bold">{{ part.name }}</h5>
+                <p class="text-muted small mb-2">{{ part.description }}</p>
+                <p class="text-danger fs-3 fw-bold mb-1">¥{{ "%.1f"|format(part.price) }}<small class="fs-6 text-muted">/斤</small></p>
+                {% if part.stock > 20 %}
+                <span class="badge bg-success"><i class="bi bi-check-circle"></i> 充足 余{{ part.stock }}斤</span>
+                {% elif part.stock > 0 %}
+                <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> 紧张 余{{ part.stock }}斤</span>
+                {% else %}
+                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> 已售罄</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center pb-3">
+                {% if part.stock > 0 %}
+                <a href="{{ url_for('reserve', part_id=part.id) }}" class="btn btn-danger px-4">预约购买</a>
+                {% else %}
+                <button class="btn btn-secondary px-4" disabled>已售罄</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
