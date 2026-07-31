@@ -1,4 +1,4 @@
-import sqlite3
+﻿import sqlite3
 import os
 from datetime import datetime
 from functools import wraps
@@ -279,5 +279,68 @@ def admin_change_password():
 
 
 # ── 启动 ─────────────────────────────────────────────────────
+
+@app.route('/admin/reservation/<int:res_id>/delete', methods=['POST'])
+@admin_required
+def delete_reservation(res_id):
+    db = get_db()
+    old = db.execute('SELECT * FROM reservations WHERE id = ?', (res_id,)).fetchone()
+    if old and old['status'] != 'cancelled':
+        db.execute('UPDATE pork_parts SET stock = stock + ? WHERE id = ?', (old['quantity'], old['pork_part_id']))
+    db.execute('DELETE FROM reservations WHERE id = ?', (res_id,))
+    db.commit()
+    flash('预约记录已删除', 'info')
+    return redirect(url_for('admin_reservations'))
+
+
+
+# ══════════════════════════════════════════════════════════════
+#  微信小程序 API 接口
+# ══════════════════════════════════════════════════════════════
+
+@app.route("/api/products", methods=["GET"])
+def api_products():
+    db = get_db()
+    parts = db.execute("SELECT * FROM pork_parts ORDER BY id").fetchall()
+    return jsonify([dict(p) for p in parts])
+
+@app.route("/api/products/<int:part_id>", methods=["GET"])
+def api_product(part_id):
+    db = get_db()
+    part = db.execute("SELECT * FROM pork_parts WHERE id = ?", (part_id,)).fetchone()
+    if part is None:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(dict(part))
+
+@app.route("/api/reserve", methods=["POST"])
+def api_reserve():
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "message": "无效数据"})
+    user_name = data.get("user_name", "").strip()
+    phone = data.get("phone", "").strip()
+    pork_part_id = data.get("pork_part_id")
+    quantity = data.get("quantity", 0)
+    appoint_date = data.get("appoint_date", "").strip()
+    if not user_name:
+        return jsonify({"success": False, "message": "请输入姓名"})
+    if not phone or len(phone) != 11:
+        return jsonify({"success": False, "message": "请输入正确手机号"})
+    if not quantity or quantity <= 0:
+        return jsonify({"success": False, "message": "数量必须大于0"})
+    if not appoint_date:
+        return jsonify({"success": False, "message": "请选择取货日期"})
+    db = get_db()
+    part = db.execute("SELECT * FROM pork_parts WHERE id = ?", (pork_part_id,)).fetchone()
+    if not part:
+        return jsonify({"success": False, "message": "该部位不存在"})
+    if quantity > part["stock"]:
+        return jsonify({"success": False, "message": f"库存不足，仅剩{part['stock']}斤"})
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    db.execute("INSERT INTO reservations (user_name, phone, pork_part_id, quantity, appoint_date, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)", (user_name, phone, pork_part_id, quantity, appoint_date, now))
+    db.execute("UPDATE pork_parts SET stock = stock - ? WHERE id = ?", (quantity, pork_part_id))
+    db.commit()
+    return jsonify({"success": True, "message": "预约成功"})
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

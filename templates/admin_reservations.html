@@ -45,13 +45,21 @@
                         <input type="hidden" name="status" value="cancelled">
                         <button class="btn btn-danger btn-sm" title="取消"><i class="bi bi-x-lg"></i></button>
                     </form>
+                    <form method="POST" action="{{ url_for('delete_reservation', res_id=r.id) }}" class="d-inline" onsubmit="return confirm('确定删除此预约吗？删除后库存会自动退回。')">
+                        <button class="btn btn-outline-dark btn-sm" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
                     {% elif r.status == 'confirmed' %}
                     <form method="POST" action="{{ url_for('update_reservation_status', res_id=r.id) }}" class="d-inline">
                         <input type="hidden" name="status" value="cancelled">
                         <button class="btn btn-outline-danger btn-sm" title="取消"><i class="bi bi-x-lg"></i></button>
                     </form>
+                    <form method="POST" action="{{ url_for('delete_reservation', res_id=r.id) }}" class="d-inline" onsubmit="return confirm('确定删除此预约吗？删除后库存会自动退回。')">
+                        <button class="btn btn-outline-dark btn-sm" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
                     {% else %}
-                    <span class="text-muted">-</span>
+                    <form method="POST" action="{{ url_for('delete_reservation', res_id=r.id) }}" class="d-inline" onsubmit="return confirm('确定删除此预约记录吗？')">
+                        <button class="btn btn-outline-dark btn-sm" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
                     {% endif %}
                 </td>
             </tr>
